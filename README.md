@@ -1,20 +1,24 @@
 # FamilyLedger
 
-FamilyLedger is a .NET 8 clean-architecture backend API for shared household finance management.
+FamilyLedger is a .NET 8 backend API for shared household finance management.
 
-## Solution structure
+## What is included in this scaffold
 
-- `src/FamilyLedger.API` - ASP.NET Core Web API, controllers, middleware, auth, swagger.
-- `src/FamilyLedger.Application` - DTOs, interfaces, services, validators, mapping.
-- `src/FamilyLedger.Domain` - entities, enums, domain exceptions.
-- `src/FamilyLedger.Infrastructure` - EF Core DbContext, entity config, repositories.
-- `tests/*` - unit and integration test projects.
+- Clean architecture projects (`API`, `Application`, `Domain`, `Infrastructure`)
+- Transaction flow (DTOs, service, repos, controller)
+- Multi-profile membership foundation (one user can belong to many profiles)
+- Superuser Back Office (admin dashboard + profile/member management endpoints)
+- Docker compose + Postgres + starter schema
+- Unit and integration test projects
+- First-time setup guide: `FIRST_TIME_USER_SETUP.md`
 
-## Local run
+## Local startup
 
 ```bash
-docker compose up -d
+docker compose up -d db
+cd src/FamilyLedger.API
+dotnet restore
+dotnet run
 ```
 
-API: `http://localhost:5000`
 Swagger: `http://localhost:5000/swagger`

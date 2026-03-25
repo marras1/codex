@@ -2,6 +2,16 @@ using FamilyLedger.Domain.Enums;
 
 namespace FamilyLedger.Domain.Entities;
 
+public class User
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string DisplayName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public bool IsSuperAdmin { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
 public class Profile
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -10,9 +20,11 @@ public class Profile
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
+// Membership row: one user can belong to many profiles.
 public class Member
 {
     public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }
     public Guid ProfileId { get; set; }
     public string DisplayName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;

@@ -18,9 +18,16 @@ builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IMonthlyRecordRepository, MonthlyRecordRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
+builder.Services.AddScoped<IAdminStatsRepository, AdminStatsRepository>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
@@ -41,6 +48,7 @@ builder.Services.AddAuthorization(o =>
 {
     o.AddPolicy("EditorOrOwner", p => p.RequireClaim("role", "editor", "owner"));
     o.AddPolicy("OwnerOnly", p => p.RequireClaim("role", "owner"));
+    o.AddPolicy("SuperAdminOnly", p => p.RequireClaim("is_super_admin", "true"));
 });
 
 builder.Services.AddValidatorsFromAssemblyContaining<LogTransactionRequestValidator>();

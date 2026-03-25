@@ -5,6 +5,7 @@ namespace FamilyLedger.Infrastructure.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    public DbSet<User> Users => Set<User>();
     public DbSet<Profile> Profiles => Set<Profile>();
     public DbSet<Member> Members => Set<Member>();
     public DbSet<Account> Accounts => Set<Account>();
@@ -19,6 +20,22 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        modelBuilder.Entity<User>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Email).HasMaxLength(255);
+            b.HasIndex(x => x.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<Member>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.HasIndex(x => new { x.ProfileId, x.UserId }).IsUnique();
+            b.HasIndex(x => new { x.ProfileId, x.Email }).IsUnique();
+            b.Property(x => x.Role).HasConversion<string>();
+        });
+
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -22,10 +22,12 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
     {
         var (status, title) = ex switch
         {
+            UnauthorizedAccessException => (401, "Unauthorized"),
             AccountNotFoundException => (404, "Not found"),
             UnauthorisedProfileAccessException => (403, "Forbidden"),
             MonthlyRecordLockedException => (409, "Record locked"),
             DomainException => (400, "Bad request"),
+            InvalidOperationException => (400, "Bad request"),
             _ => (500, "Internal server error")
         };
 
