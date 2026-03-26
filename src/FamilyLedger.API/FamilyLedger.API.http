@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:5000/api/v1
+@token = REPLACE
+
+### Register normal user
+POST {{baseUrl}}/auth/register-user
+Content-Type: application/json
+
+{ "displayName": "Anna", "email": "anna@example.com", "password": "Test1234!" }
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "anna@example.com", "password": "Test1234!" }
+
+### Create profile for current user
+POST {{baseUrl}}/auth/profiles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Smith Family", "currency": "EUR" }
+
+### Admin dashboard
+GET {{baseUrl}}/admin/dashboard
+Authorization: Bearer {{token}}
