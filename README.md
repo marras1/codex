@@ -10,18 +10,17 @@ FamilyLedger is a .NET 8 backend API for shared household finance management.
 - Superuser Back Office (admin dashboard + profile/member management endpoints)
 - Docker compose + Postgres + starter schema
 - Optional Dockerized Codex CLI helper (`docker-compose.codex.yml`)
+- Mobile-first PWA web client (`src/FamilyLedger.Web`) with green theme
 - Unit and integration test projects
 - First-time setup guide: `FIRST_TIME_USER_SETUP.md`
 
 ## Local startup
 
 ```bash
-docker compose up -d db
-cd src/FamilyLedger.API
-dotnet restore
-dotnet run
+docker compose up -d --build db api web
 ```
 
+PWA UI: `http://localhost:8081`
 Swagger: `http://localhost:5000/swagger`
 
 Dockerized Codex CLI:
@@ -29,3 +28,5 @@ Dockerized Codex CLI:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex
 ```
+
+Complete deterministic first-time flow (with fixed values + sensitive data guidance): `FIRST_TIME_USER_SETUP.md`.

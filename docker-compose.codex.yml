@@ -1,5 +1,6 @@
 services:
   codex:
+    container_name: familyledger-codex
     image: node:20-bullseye
     working_dir: /workspace
     volumes:

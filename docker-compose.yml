@@ -18,6 +18,15 @@ services:
       db:
         condition: service_healthy
 
+  web:
+    build:
+      context: .
+      dockerfile: src/FamilyLedger.Web/Dockerfile
+    ports:
+      - "8081:80"
+    depends_on:
+      - api
+
   db:
     image: postgres:16-alpine
     environment:
