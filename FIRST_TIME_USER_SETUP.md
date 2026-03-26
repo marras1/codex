@@ -1,10 +1,12 @@
 # FamilyLedger — First-Time User Setup (User + Superuser BO)
 
-This guide covers:
+This guide now includes:
 - standard user self-setup (register -> create profile -> enter data)
 - superuser back-office setup (create profiles, assign/revoke members)
 - quick test scripts
 - DB verification queries
+- **Dockerized project run**
+- **Codex CLI setup (host + Docker)**
 
 ## 1. Prerequisites
 
@@ -12,6 +14,7 @@ This guide covers:
 - Docker + Docker Compose
 - curl + jq
 - psql (or use `docker compose exec db psql`)
+- Node.js 20+ (only needed if installing Codex CLI directly on host)
 
 Verify:
 
@@ -21,34 +24,89 @@ docker --version
 docker compose version
 curl --version
 jq --version
+node --version
+npm --version
 ```
 
-## 2. Start database + API
+---
+
+## 2. Run FamilyLedger fully in Docker
+
+### Option A (recommended): API + DB via Docker Compose
 
 ```bash
-docker compose up -d db
+docker compose up -d --build db api
 ```
 
-Apply schema helpers:
+Check health/logs:
 
 ```bash
-docker compose exec -T db psql -U fl -d familyledger < schema.sql
-```
-
-Run API (terminal 2):
-
-```bash
-cd src/FamilyLedger.API
-dotnet restore
-dotnet run
+docker compose ps
+docker compose logs -f api
 ```
 
 API: `http://localhost:5000`
 Swagger: `http://localhost:5000/swagger`
 
+> If tables are missing, apply schema once:
+
+```bash
+docker compose exec -T db psql -U fl -d familyledger < schema.sql
+```
+
+### Option B: DB in Docker + API from local .NET
+
+```bash
+docker compose up -d db
+cd src/FamilyLedger.API
+dotnet restore
+dotnet run
+```
+
 ---
 
-## 3. Flow A — normal user self-onboarding in app/API
+## 3. Install and run Codex CLI for this project
+
+### 3.1 Host install (fastest)
+
+From your terminal:
+
+```bash
+npm install -g @openai/codex
+codex --login
+```
+
+Then run Codex in this repo:
+
+```bash
+cd /workspace/codex
+codex
+```
+
+### 3.2 Dockerized Codex CLI (no host Node install)
+
+Use the included helper compose file:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex
+```
+
+This starts an ephemeral Codex CLI container mounted to this repository at `/workspace`, so Codex can operate on project files.
+
+If you prefer direct Docker run:
+
+```bash
+docker run --rm -it \
+  -v "$PWD":/workspace \
+  -w /workspace \
+  -e OPENAI_API_KEY \
+  node:20-bullseye \
+  bash -lc "npm install -g @openai/codex && codex"
+```
+
+---
+
+## 4. Flow A — normal user self-onboarding in app/API
 
 ### Step A1) Register user
 
@@ -93,12 +151,12 @@ ACCOUNT_ID=$(curl -s -X POST http://localhost:5000/api/v1/accounts \
 curl -s -X POST http://localhost:5000/api/v1/transactions \
   -H "Authorization: Bearer $USER_PROFILE_TOKEN" \
   -H "Content-Type: application/json" \
-  -d "{\"accountId\":\"$ACCOUNT_ID\",\"amount\":47.80,\"direction\":\"debit\",\"description\":\"Groceries\",\"date\":\"2025-03-25\",\"category\":\"groceries\"}" | jq
+  -d "{\"accountId\":\"$ACCOUNT_ID\",\"amount\":47.80,\"direction\":\"debit\",\"description\":\"Groceries\",\"date\":\"2026-03-26\",\"category\":\"groceries\"}" | jq
 ```
 
 ---
 
-## 4. Flow B — superuser BO setup for other members
+## 5. Flow B — superuser BO setup for other members
 
 ### Step B1) Register superuser
 
@@ -160,7 +218,7 @@ Expected fields:
 
 ---
 
-## 5. Test scripts
+## 6. Test scripts
 
 ```bash
 # unit tests
@@ -173,7 +231,7 @@ dotnet test tests/FamilyLedger.IntegrationTests
 
 ---
 
-## 6. Database verification after tests
+## 7. Database verification after tests
 
 Open psql:
 
@@ -206,7 +264,7 @@ What success looks like:
 
 ---
 
-## 7. Stop environment
+## 8. Stop environment
 
 ```bash
 docker compose down
