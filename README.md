@@ -26,7 +26,8 @@ Swagger: `http://localhost:5000/swagger`
 Dockerized Codex CLI:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex
 ```
 
 Complete deterministic first-time flow (with fixed values + sensitive data guidance): `FIRST_TIME_USER_SETUP.md`.

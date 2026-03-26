@@ -14,7 +14,15 @@ This setup is written so you can copy/paste every command **without editing valu
 Use this exact workspace path/name:
 
 - Workspace folder name: `FamilyLedger`
-- Local absolute path expected in this guide: `/workspace/codex`
+- Local absolute path expected in this guide: `/workspace/FamilyLedger`
+
+If you need to create it:
+
+```bash
+mkdir -p /workspace/FamilyLedger
+cd /workspace/FamilyLedger
+# clone/copy project files into this folder
+```
 
 If you use another folder name, commands still work if you `cd` to your repo root first.  
 **Best practice for other names:**
@@ -31,6 +39,12 @@ If you use another folder name, commands still work if you `cd` to your repo roo
 Install:
 - Docker + Docker Compose
 - curl + jq
+
+### Docker setup (if not installed yet)
+
+1. Install **Docker Desktop** (Windows/macOS) or **Docker Engine + Docker Compose plugin** (Linux).
+2. Start Docker.
+3. Confirm daemon is running before continuing.
 
 Verify:
 
@@ -72,7 +86,7 @@ export OPENAI_API_KEY="sk-your-real-key-here"
 From repo root:
 
 ```bash
-cd /workspace/codex
+cd /workspace/FamilyLedger
 docker compose down -v
 docker compose up -d --build db api web
 ```
@@ -100,16 +114,28 @@ docker compose exec -T db psql -U fl -d familyledger < schema.sql
 
 ---
 
-## 4) Start Codex CLI in Docker (attached to this project)
+## 4) Start Codex workspace container (recommended)
 
 From repo root:
 
 ```bash
-cd /workspace/codex
-docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex
+cd /workspace/FamilyLedger
+docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex --login
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex
 ```
 
-This mounts your project into the Codex container at `/workspace`.
+Why this is better:
+- Codex CLI stays inside a dedicated container (`familyledger-codex`).
+- Workspace is fixed at `/workspace/FamilyLedger`.
+- Codex config and npm cache persist across restarts (named volumes).
+- You can let Codex drive everything else from inside that workspace.
+
+To stop it later:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.codex.yml stop codex
+```
 
 ---
 
