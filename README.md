@@ -27,10 +27,19 @@ Dockerized Codex CLI:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d codex
-docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex sh -lc "npx -y @openai/codex --login"
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex sh -lc "npx -y @openai/codex"
 ```
 
 Recommended order: start `codex` first, then run DB/API/web commands from inside Codex.
+
+If `exec` reports the service is not running, inspect and run one-shot:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.codex.yml ps -a
+docker compose -f docker-compose.yml -f docker-compose.codex.yml logs codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex sh -lc "npx -y @openai/codex --login"
+```
 
 Complete deterministic first-time flow (with fixed values + sensitive data guidance): `FIRST_TIME_USER_SETUP.md`.
 

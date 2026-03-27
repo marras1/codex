@@ -11,9 +11,10 @@ services:
       - codex_config:/root/.config
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    entrypoint: ["sh", "-lc"]
-    command: "npm install -g @openai/codex && tail -f /dev/null"
+      OPENAI_API_KEY: ""
+      GITHUB_TOKEN: ""
+    command: ["sh", "-c", "while true; do sleep 3600; done"]
+    restart: unless-stopped
     stdin_open: true
     tty: true
 

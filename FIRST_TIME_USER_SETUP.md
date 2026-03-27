@@ -22,7 +22,8 @@ If you need to create it (Windows PowerShell):
 ```powershell
 New-Item -ItemType Directory -Force -Path C:\codexFamilyLedger\FamilyLedger
 Set-Location C:\codexFamilyLedger\FamilyLedger
-# clone/copy project files into this folder (git clone ... .)
+git clone https://github.com/<your-org-or-user>/FamilyLedger.git .
+Get-ChildItem docker-compose*.yml
 ```
 
 If you use Git Bash:
@@ -78,10 +79,10 @@ The project contains default local-development secrets. They are okay for local 
 
 1. Edit `docker-compose.yml` under `api.environment` and `db.environment`.
 2. If DB password changes, also update `ConnectionStrings__DefaultConnection` in `docker-compose.yml`.
-3. Export your OpenAI key before launching Codex container:
+3. Set your OpenAI key before running Codex login:
 
-```bash
-export OPENAI_API_KEY="sk-your-real-key-here"
+```powershell
+$env:OPENAI_API_KEY = "sk-your-real-key-here"
 ```
 
 > Never commit production credentials to git.
@@ -95,8 +96,9 @@ Run this first in PowerShell:
 ```powershell
 Set-Location C:\codexFamilyLedger\FamilyLedger
 docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d --build codex
-docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex --login
-docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml ps -a
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex sh -lc "npx -y @openai/codex --login"
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex sh -lc "npx -y @openai/codex"
 ```
 
 Why first:
@@ -108,6 +110,39 @@ Stop Codex later (if needed):
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.codex.yml stop codex
+```
+
+If `docker-compose.yml` is missing:
+1. You are in the wrong folder, or
+2. The repository was not cloned into `C:\codexFamilyLedger\FamilyLedger`.
+
+Validate with:
+
+```powershell
+Set-Location C:\codexFamilyLedger\FamilyLedger
+Get-ChildItem docker-compose*.yml
+```
+
+If `service "codex" is not running` or container exits:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.codex.yml ps -a
+docker compose -f docker-compose.yml -f docker-compose.codex.yml logs codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d --build codex
+```
+
+One-shot fallback (does not require codex service to stay up):
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex sh -lc "npx -y @openai/codex --login"
+docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex sh -lc "npx -y @openai/codex"
+```
+
+GitHub access from inside Codex container:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex gh auth login
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex gh auth status
 ```
 
 ---
