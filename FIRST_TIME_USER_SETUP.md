@@ -14,14 +14,22 @@ This setup is written so you can copy/paste every command **without editing valu
 Use this exact workspace path/name:
 
 - Workspace folder name: `FamilyLedger`
-- Local absolute path expected in this guide: `/workspace/FamilyLedger`
+- Windows parent folder: `C:\codexFamilyLedger`
+- Project folder in that parent: `C:\codexFamilyLedger\FamilyLedger`
 
-If you need to create it:
+If you need to create it (Windows PowerShell):
+
+```powershell
+New-Item -ItemType Directory -Force -Path C:\codexFamilyLedger\FamilyLedger
+Set-Location C:\codexFamilyLedger\FamilyLedger
+# clone/copy project files into this folder (git clone ... .)
+```
+
+If you use Git Bash:
 
 ```bash
-mkdir -p /workspace/FamilyLedger
-cd /workspace/FamilyLedger
-# clone/copy project files into this folder
+mkdir -p /c/codexFamilyLedger/FamilyLedger
+cd /c/codexFamilyLedger/FamilyLedger
 ```
 
 If you use another folder name, commands still work if you `cd` to your repo root first.  
@@ -85,8 +93,8 @@ export OPENAI_API_KEY="sk-your-real-key-here"
 
 From repo root:
 
-```bash
-cd /workspace/FamilyLedger
+```powershell
+Set-Location C:\codexFamilyLedger\FamilyLedger
 docker compose down -v
 docker compose up -d --build db api web
 ```
@@ -118,8 +126,8 @@ docker compose exec -T db psql -U fl -d familyledger < schema.sql
 
 From repo root:
 
-```bash
-cd /workspace/FamilyLedger
+```powershell
+Set-Location C:\codexFamilyLedger\FamilyLedger
 docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d codex
 docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex --login
 docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex
@@ -127,7 +135,7 @@ docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex code
 
 Why this is better:
 - Codex CLI stays inside a dedicated container (`familyledger-codex`).
-- Workspace is fixed at `/workspace/FamilyLedger`.
+- Workspace inside container is fixed at `/workspace/FamilyLedger` and mapped from `C:\codexFamilyLedger\FamilyLedger`.
 - Codex config and npm cache persist across restarts (named volumes).
 - You can let Codex drive everything else from inside that workspace.
 

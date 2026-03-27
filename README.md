@@ -31,3 +31,5 @@ docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex code
 ```
 
 Complete deterministic first-time flow (with fixed values + sensitive data guidance): `FIRST_TIME_USER_SETUP.md`.
+
+Windows note: this project can be run from `C:\codexFamilyLedger\FamilyLedger` with the same Docker Compose commands.
