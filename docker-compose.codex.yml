@@ -1,15 +1,18 @@
 services:
   codex:
     container_name: familyledger-codex
-    image: node:20-bullseye
+    build:
+      context: .
+      dockerfile: src/Codex/Dockerfile
     working_dir: /workspace/FamilyLedger
     volumes:
       - ./:/workspace/FamilyLedger
       - codex_npm_cache:/root/.npm
       - codex_config:/root/.config
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-    entrypoint: ["bash", "-lc"]
+    entrypoint: ["sh", "-lc"]
     command: "npm install -g @openai/codex && tail -f /dev/null"
     stdin_open: true
     tty: true

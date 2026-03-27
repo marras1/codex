@@ -30,6 +30,8 @@ docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d codex
 docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex
 ```
 
+Recommended order: start `codex` first, then run DB/API/web commands from inside Codex.
+
 Complete deterministic first-time flow (with fixed values + sensitive data guidance): `FIRST_TIME_USER_SETUP.md`.
 
 Windows note: this project can be run from `C:\codexFamilyLedger\FamilyLedger` with the same Docker Compose commands.

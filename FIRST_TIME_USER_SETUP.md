@@ -32,8 +32,7 @@ mkdir -p /c/codexFamilyLedger/FamilyLedger
 cd /c/codexFamilyLedger/FamilyLedger
 ```
 
-If you use another folder name, commands still work if you `cd` to your repo root first.  
-**Best practice for other names:**
+**Best practice for names in this flow:**
 - profile name: `FamilyLedger`
 - first user: `anna.family@example.com`
 - admin user: `admin.family@example.com`
@@ -52,7 +51,7 @@ Install:
 
 1. Install **Docker Desktop** (Windows/macOS) or **Docker Engine + Docker Compose plugin** (Linux).
 2. Start Docker.
-3. Confirm daemon is running before continuing.
+3. Confirm daemon is running.
 
 Verify:
 
@@ -89,19 +88,37 @@ export OPENAI_API_KEY="sk-your-real-key-here"
 
 ---
 
-## 3) Start all project containers (DB + API + PWA UI)
+## 3) FIRST STEP — setup Codex in Docker at `C:\codexFamilyLedger`
 
-From repo root:
+Run this first in PowerShell:
 
 ```powershell
 Set-Location C:\codexFamilyLedger\FamilyLedger
-docker compose down -v
-docker compose up -d --build db api web
+docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d --build codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex --login
+docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex
 ```
 
-Check status:
+Why first:
+- Codex CLI stays in a dedicated container (`familyledger-codex`).
+- Workspace inside container is `/workspace/FamilyLedger`, mapped from `C:\codexFamilyLedger\FamilyLedger`.
+- Codex has Docker socket access and can run the rest of the setup for you from that workspace.
+
+Stop Codex later (if needed):
 
 ```bash
+docker compose -f docker-compose.yml -f docker-compose.codex.yml stop codex
+```
+
+---
+
+## 4) From Codex, run the rest (DB + API + PWA UI)
+
+Inside Codex terminal, run:
+
+```bash
+docker compose down -v
+docker compose up -d --build db api web
 docker compose ps
 ```
 
@@ -122,31 +139,6 @@ docker compose exec -T db psql -U fl -d familyledger < schema.sql
 
 ---
 
-## 4) Start Codex workspace container (recommended)
-
-From repo root:
-
-```powershell
-Set-Location C:\codexFamilyLedger\FamilyLedger
-docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d codex
-docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex --login
-docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex codex
-```
-
-Why this is better:
-- Codex CLI stays inside a dedicated container (`familyledger-codex`).
-- Workspace inside container is fixed at `/workspace/FamilyLedger` and mapped from `C:\codexFamilyLedger\FamilyLedger`.
-- Codex config and npm cache persist across restarts (named volumes).
-- You can let Codex drive everything else from inside that workspace.
-
-To stop it later:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.codex.yml stop codex
-```
-
----
-
 ## 5) Use the mobile-first PWA UI
 
 1. Open `http://localhost:8081` on desktop or mobile browser.
@@ -158,105 +150,60 @@ docker compose -f docker-compose.yml -f docker-compose.codex.yml stop codex
    - Create Transaction
 3. Watch API outputs in the in-page `Result log` panel.
 
-Theme notes:
-- green-first palette
-- simple cards, mobile-first layout
-- installable PWA manifest + service worker caching
-
 ---
 
 ## 6) Run CLI tests with fixed values (no edits needed)
-
-### 6.1 Register default user
 
 ```bash
 curl -s -X POST http://localhost:5000/api/v1/auth/register-user \
   -H "Content-Type: application/json" \
   -d '{"displayName":"Anna Family","email":"anna.family@example.com","password":"Test1234!"}' | jq
-```
 
-### 6.2 Login
-
-```bash
 USER_TOKEN=$(curl -s -X POST http://localhost:5000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"anna.family@example.com","password":"Test1234!"}' | jq -r '.accessToken')
-```
 
-### 6.3 Create profile
-
-```bash
 PROFILE_ID=$(curl -s -X POST http://localhost:5000/api/v1/auth/profiles \
   -H "Authorization: Bearer $USER_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name":"FamilyLedger","currency":"EUR"}' | jq -r '.profileId')
-```
 
-### 6.4 Switch profile
-
-```bash
 USER_PROFILE_TOKEN=$(curl -s -X POST http://localhost:5000/api/v1/auth/switch-profile/$PROFILE_ID \
   -H "Authorization: Bearer $USER_TOKEN" | jq -r '.accessToken')
-```
 
-### 6.5 Create account
-
-```bash
 ACCOUNT_ID=$(curl -s -X POST http://localhost:5000/api/v1/accounts \
   -H "Authorization: Bearer $USER_PROFILE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name":"SEB Savings","type":"savings","currency":"EUR","balanceOverride":12500}' | jq -r '.id')
-```
 
-### 6.6 Create transaction
-
-```bash
 curl -s -X POST http://localhost:5000/api/v1/transactions \
   -H "Authorization: Bearer $USER_PROFILE_TOKEN" \
   -H "Content-Type: application/json" \
-  -d "{\"accountId\":\"$ACCOUNT_ID\",\"amount\":47.80,\"direction\":\"debit\",\"description\":\"Groceries\",\"date\":\"2026-03-26\",\"category\":\"groceries\"}" | jq
+  -d "{\"accountId\":\"$ACCOUNT_ID\",\"amount\":47.80,\"direction\":\"debit\",\"description\":\"Groceries\",\"date\":\"2026-03-27\",\"category\":\"groceries\"}" | jq
 ```
 
 ---
 
 ## 7) Superuser BO flow (fixed values)
 
-### 7.1 Register superuser
-
 ```bash
 curl -s -X POST http://localhost:5000/api/v1/auth/register-user \
   -H "Content-Type: application/json" \
   -d '{"displayName":"Admin Family","email":"admin.family@example.com","password":"Admin1234!","isSuperAdmin":true}' | jq
-```
 
-### 7.2 Login superuser
-
-```bash
 ADMIN_TOKEN=$(curl -s -X POST http://localhost:5000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin.family@example.com","password":"Admin1234!"}' | jq -r '.accessToken')
-```
 
-### 7.3 Register another member
-
-```bash
 TARGET_USER_ID=$(curl -s -X POST http://localhost:5000/api/v1/auth/register-user \
   -H "Content-Type: application/json" \
   -d '{"displayName":"Bob Family","email":"bob.family@example.com","password":"Bob1234!"}' | jq -r '.userId')
-```
 
-### 7.4 BO create profile + assign owner
-
-```bash
 BO_PROFILE_ID=$(curl -s -X POST http://localhost:5000/api/v1/admin/profiles \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"FamilyLedger BO\",\"currency\":\"EUR\",\"ownerUserId\":\"$TARGET_USER_ID\"}" | jq -r '.profileId')
-```
 
-### 7.5 BO dashboard check
-
-```bash
 curl -s http://localhost:5000/api/v1/admin/dashboard \
   -H "Authorization: Bearer $ADMIN_TOKEN" | jq
 ```
@@ -271,12 +218,6 @@ docker compose exec db psql -U fl -d familyledger -c 'SELECT user_id, profile_id
 docker compose exec db psql -U fl -d familyledger -c 'SELECT id, name, currency FROM "Profiles" ORDER BY created_at DESC;'
 docker compose exec db psql -U fl -d familyledger -c 'SELECT id, account_id, amount, direction, description, date FROM "Transactions" ORDER BY created_at DESC;'
 ```
-
-Expected:
-- users for Anna/Admin/Bob present
-- at least one profile called `FamilyLedger`
-- memberships linking users to profiles
-- at least one groceries transaction
 
 ---
 
