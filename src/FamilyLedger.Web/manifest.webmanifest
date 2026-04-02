@@ -1,0 +1,9 @@
+{
+  "name": "FamilyLedger",
+  "short_name": "FamilyLedger",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#061510",
+  "theme_color": "#0f3d2e",
+  "icons": []
+}
