@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f3d2e" />
+    <title>FamilyLedger</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>FamilyLedger</h1>
+      <p class="muted">Mobile-first family finance dashboard</p>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>1) Register User</h2>
+        <form id="register-form">
+          <input required name="displayName" value="Anna Family" placeholder="Display Name" />
+          <input required name="email" value="anna.family@example.com" placeholder="Email" />
+          <input required name="password" type="password" value="Test1234!" placeholder="Password" />
+          <label><input name="isSuperAdmin" type="checkbox" /> Super admin</label>
+          <button type="submit">Register</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>2) Login</h2>
+        <form id="login-form">
+          <input required name="email" value="anna.family@example.com" placeholder="Email" />
+          <input required name="password" type="password" value="Test1234!" placeholder="Password" />
+          <button type="submit">Login</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>3) Create Profile</h2>
+        <form id="profile-form">
+          <input required name="name" value="FamilyLedger" placeholder="Profile Name" />
+          <input required name="currency" value="EUR" placeholder="Currency" />
+          <button type="submit">Create Profile</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>4) Create Account</h2>
+        <form id="account-form">
+          <input required name="name" value="SEB Savings" placeholder="Account Name" />
+          <input required name="type" value="savings" placeholder="Type" />
+          <input required name="currency" value="EUR" placeholder="Currency" />
+          <input required name="balanceOverride" value="12500" placeholder="Balance Override" />
+          <button type="submit">Create Account</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>5) Create Transaction</h2>
+        <form id="transaction-form">
+          <input required name="amount" value="47.80" placeholder="Amount" />
+          <input required name="direction" value="debit" placeholder="Direction" />
+          <input required name="description" value="Groceries" placeholder="Description" />
+          <input required name="date" value="2026-03-26" placeholder="Date" />
+          <input required name="category" value="groceries" placeholder="Category" />
+          <button type="submit">Create Transaction</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Result log</h2>
+        <pre id="log"></pre>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
