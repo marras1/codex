@@ -105,6 +105,7 @@ Why first:
 - Codex CLI stays in a dedicated container (`familyledger-codex`).
 - Workspace inside container is `/workspace/FamilyLedger`, mapped from `C:\codexFamilyLedger\FamilyLedger`.
 - Codex has Docker socket access and can run the rest of the setup for you from that workspace.
+- Codex login callback port is mapped: `1455` (container) -> `1455` (host).
 
 Stop Codex later (if needed):
 

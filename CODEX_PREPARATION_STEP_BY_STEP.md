@@ -75,6 +75,14 @@ git --version
 
 If Docker commands fail, install/start Docker Desktop before continuing.
 
+Also verify port `1455` is free on host (Codex login callback uses it):
+
+```powershell
+netstat -ano | findstr :1455
+```
+
+If you see an existing listener on `1455`, stop that process first.
+
 ---
 
 ## 4) Build and start Codex container
@@ -87,6 +95,8 @@ docker compose -f docker-compose.yml -f docker-compose.codex.yml ps -a
 ```
 
 Expected: service `codex` is `Up`.
+
+Important: the compose file maps `1455:1455` so browser login can return from host to container.
 
 ---
 
@@ -103,6 +113,16 @@ $env:OPENAI_API_KEY = "sk-your-real-key-here"
 ```powershell
 docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex sh -lc "npx -y @openai/codex --login"
 ```
+
+If login says *"port 1455 is not mapped from container to your host"*:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.codex.yml down
+docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d --build codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml ps
+```
+
+Then retry login.
 
 3. Start Codex interactive shell:
 
@@ -158,6 +178,18 @@ docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex 
 docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex sh -lc "npx -y @openai/codex"
 ```
 
+### Error: `port 1455 is not mapped from the container to your host`
+
+1. Confirm compose file contains a `ports` section for codex:
+   - `1455:1455`
+2. Recreate service:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.codex.yml down
+docker compose -f docker-compose.yml -f docker-compose.codex.yml up -d --build codex
+docker compose -f docker-compose.yml -f docker-compose.codex.yml ps
+```
+
 ---
 
 ## 8) Next step after Codex is ready
@@ -165,4 +197,3 @@ docker compose -f docker-compose.yml -f docker-compose.codex.yml run --rm codex 
 After Codex login works, continue with the main project setup guide:
 
 - `FIRST_TIME_USER_SETUP.md`
-

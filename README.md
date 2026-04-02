@@ -32,6 +32,8 @@ docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex sh -
 docker compose -f docker-compose.yml -f docker-compose.codex.yml exec codex sh -lc "npx -y @openai/codex"
 ```
 
+Note: `docker-compose.codex.yml` maps login callback port `1455:1455`.
+
 Recommended order: start `codex` first, then run DB/API/web commands from inside Codex.
 
 If `exec` reports the service is not running, inspect and run one-shot:

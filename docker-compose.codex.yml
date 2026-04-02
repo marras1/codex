@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: src/Codex/Dockerfile
     working_dir: /workspace/FamilyLedger
+    ports:
+      - "1455:1455"
     volumes:
       - ./:/workspace/FamilyLedger
       - codex_npm_cache:/root/.npm
