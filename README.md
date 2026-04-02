@@ -13,6 +13,7 @@ FamilyLedger is a .NET 8 backend API for shared household finance management.
 - Mobile-first PWA web client (`src/FamilyLedger.Web`) with green theme
 - Unit and integration test projects
 - First-time setup guide: `FIRST_TIME_USER_SETUP.md`
+- Dummy-proof Codex prep guide (Windows): `CODEX_PREPARATION_STEP_BY_STEP.md`
 
 ## Local startup
 
