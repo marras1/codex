@@ -4,7 +4,7 @@ using FamilyLedger.Domain.Entities;
 
 namespace FamilyLedger.Application.Mappings;
 
-public sealed class MappingProfile : Profile
+public sealed class MappingProfile : AutoMapper.Profile
 {
     public MappingProfile()
     {

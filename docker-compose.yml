@@ -16,6 +16,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
 
   web:
     build:
@@ -41,6 +43,28 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  db-init:
+    image: postgres:16-alpine
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./schema.local.sql:/schema.local.sql:ro
+    environment:
+      PGPASSWORD: fl_dev
+    command:
+      - sh
+      - -c
+      - psql -h db -U fl -d familyledger -f /schema.local.sql
+
+  adminer:
+    image: adminer:4.8.1
+    ports:
+      - "8082:8080"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:

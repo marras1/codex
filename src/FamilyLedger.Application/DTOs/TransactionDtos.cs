@@ -3,6 +3,22 @@ using FamilyLedger.Domain.Enums;
 namespace FamilyLedger.Application.DTOs;
 
 public record MemberSummary(Guid Id, string DisplayName);
+public record CreateAccountRequest(
+    string Name,
+    AccountType Type,
+    string Currency,
+    decimal? BalanceOverride,
+    string? Institution = null);
+public record AccountResponse(
+    Guid Id,
+    Guid ProfileId,
+    string Name,
+    AccountType Type,
+    string? Institution,
+    decimal? BalanceOverride,
+    string Currency,
+    bool IsActive,
+    DateTime CreatedAt);
 public record LogTransactionRequest(
     Guid AccountId,
     decimal Amount,

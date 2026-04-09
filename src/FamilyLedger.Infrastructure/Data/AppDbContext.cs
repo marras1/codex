@@ -36,6 +36,38 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             b.Property(x => x.Role).HasConversion<string>();
         });
 
+        modelBuilder.Entity<Account>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Type).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<Transaction>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Direction).HasConversion<string>();
+            b.Property(x => x.Category).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<Allocation>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Status).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<RecurringItem>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Category).HasConversion<string>();
+            b.Property(x => x.Frequency).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<MonthlyRecord>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Status).HasConversion<string>();
+        });
+
         base.OnModelCreating(modelBuilder);
     }
 }

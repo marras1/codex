@@ -83,7 +83,19 @@ public sealed class AuthService(
     public async Task<IReadOnlyList<ProfileSummary>> GetMyProfilesAsync(Guid userId, CancellationToken ct = default)
     {
         var memberships = await membershipRepository.GetByUserIdAsync(userId, ct);
-        return memberships.Select(m => new ProfileSummary(m.ProfileId, "Profile", "EUR", m.Role)).ToList();
+        var result = new List<ProfileSummary>(memberships.Count);
+
+        foreach (var membership in memberships)
+        {
+            var profile = await profileRepository.GetByIdAsync(membership.ProfileId, ct);
+            result.Add(new ProfileSummary(
+                membership.ProfileId,
+                profile?.Name ?? "Unknown profile",
+                profile?.Currency ?? "EUR",
+                membership.Role));
+        }
+
+        return result;
     }
 
     public async Task<AuthTokenResponse> SwitchProfileAsync(Guid userId, Guid profileId, CancellationToken ct = default)

@@ -1,8 +1,10 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using FamilyLedger.API.Middleware;
 using FamilyLedger.Application.Interfaces;
 using FamilyLedger.Application.Mappings;
 using FamilyLedger.Application.Services;
+using FluentValidation;
 using FamilyLedger.Application.Validators;
 using FamilyLedger.Infrastructure.Data;
 using FamilyLedger.Infrastructure.Repositories;
@@ -32,6 +34,7 @@ builder.Services.AddScoped<IAdminStatsRepository, AdminStatsRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
+        o.MapInboundClaims = false;
         o.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -71,7 +74,8 @@ builder.Services.AddCors(o => o.AddPolicy("UIClients", p =>
         .AllowAnyMethod()
         .AllowAnyHeader()));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 var app = builder.Build();
 
