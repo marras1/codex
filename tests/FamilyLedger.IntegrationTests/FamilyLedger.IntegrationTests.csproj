@@ -14,4 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\FamilyLedger.API\FamilyLedger.API.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
 </Project>

@@ -56,7 +56,7 @@ builder.Services.AddAuthorization(o =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<LogTransactionRequestValidator>();
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(_ => { }, typeof(MappingProfile));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

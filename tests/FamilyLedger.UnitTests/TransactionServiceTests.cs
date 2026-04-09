@@ -20,7 +20,7 @@ public class TransactionServiceTests
 
     public TransactionServiceTests()
     {
-        var mapper = new MapperConfiguration(c => c.AddProfile<MappingProfile>()).CreateMapper();
+        var mapper = new MapperConfiguration(c => c.AddProfile<MappingProfile>(), null).CreateMapper();
         _sut = new TransactionService(_transactionRepo.Object, _accountRepo.Object, _monthlyRecordRepo.Object, mapper);
     }
 
